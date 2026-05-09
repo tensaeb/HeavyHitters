@@ -2,12 +2,15 @@ import Vapor
 import Leaf
 
 public func configure(_ app: Application) async throws {
-    // 1. Static files (CSS/JS)
-    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
-    // 2. Setup Leaf
+    if let portString = Environment.get("PORT"), let port = Int(portString) {
+        app.http.server.configuration.port = port
+    }
+    
+    app.http.server.configuration.hostname = "0.0.0.0"
+    
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     app.views.use(.leaf)
-
-    // 3. Register routes
+    
     try routes(app)
 }
